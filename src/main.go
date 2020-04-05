@@ -9,6 +9,29 @@ import (
 	"strings"
 )
 
+
+func main() {
+	content := readLatexFile("../Resource/test.tex")
+	content = processMacros(content)	
+	body := getBody(content) 
+	body = processSections(body)
+	body = processTheorems(body)
+	body = processEnumItem(body)
+	body = processHrefCite(body)	
+
+	// break lines properly to easy the reading
+	// not necessary to use regexp, "strings.ReplacesAll()" would also work 
+	body = regexp.MustCompile(`</p><p>`).ReplaceAllString(body, "</p>\n\n<p>")
+	body = regexp.MustCompile(`<ul>`).ReplaceAllString(body, "\n<ul>")
+	body = regexp.MustCompile(`<ol>`).ReplaceAllString(body, "\n<ol>")
+	body = regexp.MustCompile(`</ol>`).ReplaceAllString(body, "\n</ol>\n")
+	body = regexp.MustCompile(`</ul>`).ReplaceAllString(body, "\n</ul>\n")
+	body = regexp.MustCompile(`<li>`).ReplaceAllString(body, "\n<li>")
+
+    writeToFile("[latexpage]\n" + body, "test.txt")
+}
+
+
 /* Read the source Latex file */
 func readLatexFile(latexFilePath string) string {
 	file, err := os.Open(latexFilePath)
@@ -17,21 +40,13 @@ func readLatexFile(latexFilePath string) string {
 	}
 	defer file.Close()
 
-	data, err := ioutil.ReadAll(file)
+	content, err := ioutil.ReadAll(file)
 	if err != nil {
 		log.Fatal(err)
 	}
-	
-	// replace line-breakers with blankspace in the content
-	//content := strings.Replace(string(data), "\n", " ", -1)
-	return string(data)
+	return string(content)
 }
 
-
-// TODO: deal with the micros defined by "\newcommand{}{}"
-func processMacros(latexContent string) string{
-	return latexContent
-}
 
 /* 
 1. get the contents between "\begin{document}" and "\end{document}"
@@ -40,9 +55,6 @@ func processMacros(latexContent string) string{
 4. replace macros defined by "\newcommand{}{}"
 */
 func getBody(latexContent string) string {
-
-	// handle the macros
-	latexContent = processMacros(latexContent)
 
 	// "(?s)" is the flag to turn on the DOTALL mode, which allows "." to match '\n' also.
 	reg := regexp.MustCompile(`(?s)(\\begin{document})(.*)(\\end{document})`)
@@ -67,11 +79,12 @@ func getBody(latexContent string) string {
 	return newBody
 }
 
+
 // handle "itemize" and "enumerate" environment that take no paramters
 func processEnumItem(body string) string {
 	enumItemTags := map[string]string{"itemize": "ul",
-									"enumerate": "ol",
-									"item": "li"} 
+										"enumerate": "ol",
+										"item": "li"} 
 
 	reg := regexp.MustCompile(`\\begin{itemize}` +
 								`|\\end{itemize}` +
@@ -106,6 +119,7 @@ func processEnumItem(body string) string {
 	return newBody
 }
 
+
 func processTheorems(body string) string {
 	theoremTags := map[string]string{"theorem": "blockquote",
 									"title": "b"} 
@@ -113,7 +127,6 @@ func processTheorems(body string) string {
 	var counter int32 = 1
 
 	labelTable := make(map[string]string)
-
 
 	reg := regexp.MustCompile(`\\begin{theorem}` +
 								`|\\end{theorem}` +
@@ -152,7 +165,7 @@ func processTheorems(body string) string {
 			counter++
 
 			htmlTheorem = "<" + theoremTags["theorem"] +  " id=\"" + label + "\">"
-			htmlTheorem += "<" + theoremTags["title"] + ">" + strings.Title(theoremType) + " " + theoremIndex  +  "</" + theoremTags["title"] + ">" 
+			htmlTheorem += "<" + theoremTags["title"] + ">" + strings.Title(theoremType) + " " + theoremIndex  +  "&nbsp;&nbsp;&nbsp;</" + theoremTags["title"] + ">" 
 		}else{
 			// if it is the closing
 			htmlTheorem = "</" + theoremTags["theorem"] + ">"
@@ -191,6 +204,7 @@ func processTheorems(body string) string {
 
 func processSections(body string) string {
 	sectionTags := map[string]string{"section": "h2", "subsection": "h3"} 
+	indexTitleSeperator := "&nbsp;&nbsp;&nbsp;"
 
 	var sectionCounter int32 = 1
 	var subsectionCounter int32 = 1
@@ -237,9 +251,9 @@ func processSections(body string) string {
 			// add an record to the labelTable
 			labelTable[label] = sectionIndex
 
-			htmlSection = "<" + sectionTags[tagType] + " id=\"" + label + "\">" + sectionIndex + " " +  tagValue + "</" + sectionTags[tagType] + ">"
+			htmlSection = "<" + sectionTags[tagType] + " id=\"" + label + "\">" + sectionIndex + indexTitleSeperator +  tagValue + "</" + sectionTags[tagType] + ">"
 		}else{
-			htmlSection = "<" + sectionTags[tagType] + ">" + sectionIndex + " " +  tagValue + "</" + sectionTags[tagType] + ">"
+			htmlSection = "<" + sectionTags[tagType] + ">" + sectionIndex + indexTitleSeperator +  tagValue + "</" + sectionTags[tagType] + ">"
 		} 
 
 		newBody = newBody + "\n" +  htmlSection + "\n"
@@ -265,7 +279,6 @@ func processSections(body string) string {
 		newBody += textBlocks[i+1]
 	}
 
-
 	// HTML does not allow ":" appear in the "id" for anchor, so replace it by "_"
 	newBody = regexp.MustCompile(`section:`).ReplaceAllString(newBody, "section_")
 	return newBody
@@ -283,31 +296,44 @@ func writeToFile(content string, filePath string){
     file.WriteString(content)
 } 
 
-func main() {
-	content := readLatexFile("Resource/test.tex")
+
+func processMacros(body string) string{
+
+	macroTable := make(map[string]string)
+	macroBlocks := regexp.MustCompile(`\\newcommand{\S*}`).FindAllString(body, -1)
+	for _,block := range macroBlocks{
+		block = strings.TrimPrefix(block,"\\newcommand{")
+		block = strings.TrimSuffix(block,"}")
+
+		// parsed[0] contains the macro name
+		// parsed[1] contains the macro value
+		parsed := regexp.MustCompile("}{").Split(block, -1)
+		macroTable[parsed[0]] = parsed[1]
+	}
 	
-	body := getBody(content) 
+	for macroName, macroValue := range macroTable{
+		body = strings.ReplaceAll(body, macroName, macroValue)
+	}
+	return body
+}
 
-	//fmt.Println(body)
-	//fmt.Println(string(data))
-	body = processSections(body)
 
-	body = processTheorems(body)
+func processHrefCite(body string) string{
 
-	body = processEnumItem(body)
-
+	citations := regexp.MustCompile(`\\href{.*?}{.*?}`).FindAllString(body, -1)
 	
-	// break lines properly to easy the reading
-	body = regexp.MustCompile(`</p><p>`).ReplaceAllString(body, "</p>\n\n<p>")
-	body = regexp.MustCompile(`<ul>`).ReplaceAllString(body, "\n<ul>")
-	body = regexp.MustCompile(`<ol>`).ReplaceAllString(body, "\n<ol>")
-	body = regexp.MustCompile(`</ol>`).ReplaceAllString(body, "\n</ol>\n")
-	body = regexp.MustCompile(`</ul>`).ReplaceAllString(body, "\n</ul>\n")
-	body = regexp.MustCompile(`<li>`).ReplaceAllString(body, "\n<li>")
+	for i,citation := range citations{
+		citation = strings.TrimPrefix(citation, "\\href{")
+		citation = strings.TrimSuffix(citation,"}")
+		// parsed[0] contains the url
+		// parsed[1] contains the citation phrase
+		parsed := regexp.MustCompile("}{").Split(citation, -1)
 
+		//cast the citatin to HTML format
+		htmlCitation := "<a href=\"" +parsed[0] + "\" target=\"_blank\">" + parsed[1] + "</a>"
 
-    writeToFile("[latexpage]\n" + body, "test.txt")
+		body = strings.ReplaceAll(body, citations[i], htmlCitation)
+	}
 	
-	//fmt.Printf("%s", body)
-
+	return body
 }
