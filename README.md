@@ -1,6 +1,6 @@
-# LaTeX to (Wordpress) HTML Converter
+# LaTeX to (WordPress) HTML Converter
 
-This is a command-line tool in [Golang](https://golang.org/) that converts LaTeX (in its restricted form) to HTML codes for Wordpress posts. Note that this tool is supposed to be used in combination with the Wordpress plugin [QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/) (Yes, an extension of an extention). Though it does not work by itself, it will ease your pain in converting LaTeX codes into html even with the QuickLaTex plugin. That is why it is named **QuickerLaTeX**. 
+This is a command-line tool in [Golang](https://golang.org/) that converts LaTeX (in its restricted form) to HTML codes for [WordPress](https://wordpress.org/https://wordpress.org/) posts. Note that this tool is supposed to be used in combination with the WordPress plugin [QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/) (Yes, an extension of an extention). Though it does not work by itself, it will ease your pain in converting LaTeX codes into html even with the QuickLaTex plugin. That is why it is named **QuickerLaTeX**. 
 
 ## Demo
 As a quick demo, see <a href="https://xiao-liang.com/blog/?p=130" target="_blank">this article</a>. It is a blog whose source code contains the following latex commands: `lemma`, `section`, `subsection`, `itemize`, `equation`, `align` and citations by hyper reference. Some of them have labels and cross-references.
@@ -20,7 +20,7 @@ Let us first take a look at what it does and what it does not do. All the suppor
 
 For a complete list, visit the [webpage of Pavel Holoborodko](http://www.holoborodko.com/pavel/quicklatex/) (the amazing developer).
 
-These features are actually already enough for many Wordpress bloggers who use a moderate amount of LaTeX codes.
+These features are actually already enough for many WordPress bloggers who use a moderate amount of LaTeX codes.
 
 For these features, our **QuickerLaTeX** tool does nothing but simply keeps the LaTeX codes as it is, to allow QuickLaTeX to deal with it.
 
@@ -44,14 +44,14 @@ For these features, our **QuickerLaTeX** tool does nothing but simply keeps the 
 4. Copy the `main.go` file in `QuickerLaTeX\src\` folder to the same directory of the `example.tex` file
 5. Open your terminal and `cd` into the same directory of the `example.tex` file. Note that the `main.go` is also in this folder by now.
 6. Execute `go run main.go example.tex`. Then, a file called `example.txt` will be generated.
-7. Copy the content of `example.txt` to the Wordpress post editor in "**code view**" mode. Namely, you need to past the content there as plain html code, instead of using the **visual editor**. 
+7. Copy the content of `example.txt` to the WordPress post editor in "**code view**" mode. Namely, you need to past the content there as plain html code, instead of using the **visual editor**. 
 
 
 ## The Rules <a name="rules"></a>
 * Only use LaTeX features that are explicitly listed as "supported" by [QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/) or **QuickerLaTeX** (the current tool).
 * Obey the rules for [QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/). (Indeed, my tool is just an extension of QuickLaTeX).
-* Labels for both sections and subsections should start with `section:`. Namely, it should be of the form`\label{section:_your_label_}`
-* Similarly, labeling `theorem` environment with  `\label{theorem:_your_label_}`, and `lemma` environment with  `\label{lemma:_your_label_}`
+* Labels for both sections and subsections should start with `section:`. Namely, it should be of the form`\label{section:_your_label_}`.
+* Similarly, labeling `theorem` environment with  `\label{theorem:_your_label_}`, and `lemma` environment with  `\label{lemma:_your_label_}`.
 * As mentioned earlier, `\itemize`, `\enumerate` and `\newcommand` are supported in their simplest form.
 
 ## Acknowledgements
