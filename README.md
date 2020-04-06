@@ -1,6 +1,6 @@
 # LaTeX to (WordPress) HTML Converter
 
-This is a command-line tool in [Golang](https://golang.org/) that converts LaTeX (in its restricted form) to HTML codes for [WordPress](https://wordpress.org/https://wordpress.org/) posts. Note that this tool is supposed to be used in combination with the WordPress plugin [QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/) (Yes, an extension of an extention). Though it does not work by itself, it will ease your pain in converting LaTeX codes into html even with the QuickLaTex plugin. That is why it is named **QuickerLaTeX**. 
+This is a command-line tool in [Golang](https://golang.org/) that converts LaTeX (in restricted form) to HTML codes for [WordPress](https://wordpress.org/https://wordpress.org/) posts. Note that this tool is supposed to be used in combination with the WordPress plugin [QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/) (Yes, an extension of an extention). Though it does not work by itself, it will ease your pain in converting LaTeX codes into html even with the QuickLaTex plugin. That is why it is named **QuickerLaTeX**. 
 
 ## Demo
 For a quick demo, see <a href="https://xiao-liang.com/blog/?p=130" target="_blank">this article</a>. It is a blog whose source code contains the following latex commands: `lemma`, `section`, `subsection`, `itemize`, `equation`, `align` and citations by hyper reference. Some of them have labels and cross-references.
