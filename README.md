@@ -2,6 +2,15 @@
 
 This is a command-line tool in [Golang](https://golang.org/) that converts LaTeX (in its restricted form) to HTML codes for Wordpress posts. Note that this tool is supposed to be used in combination with the Wordpress plugin [QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/) (Yes, an extension of an extention). Though it does not work by itself, it will ease your pain in converting LaTeX codes into html even with the QuickLaTex plugin. That is why it is named **QuickerLaTeX**. 
 
+## Demo
+As a quick demo, see [this article](https://xiao-liang.com/blog/?p=130). It is a blog whose source code contains the following latex commands: "lemma", "section", "subsection", "itemize", "equation", "align" and citations by hyper reference. Some of them have labels and cross-references.
+
+I provide the input source LaTeX file in 
+ * `QuickerLaTeX/Demo/poly_expected_poly.tex`
+
+The output of our tool is the file 
+* `QuickerLaTeX/Demo/poly_expected_poly.txt`.
+
 ## Features (and the motivation)
 Let us first take a look at what it does and what it does not do. All the supported LaTeX features can be put into to the following two categories:
 #### The ones supported by QuickLaTeX:

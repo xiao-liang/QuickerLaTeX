@@ -1,0 +1,60 @@
+[latexpage]
+<p>
+<h2>1&nbsp;&nbsp;&nbsp;The Problem</h2>
+ To prove the security of cryptographic objects, we usually need to conduct polynomial time reductions. For example, consider a primitive $A$ that is constructed (solely) from another primitive $B$ that is secure by assumption (for concreteness, think of $A$ as a commitment scheme and $B$ as an one-way permutation). To prove that $A$ achieves some target security guarantee, the canonical approach is to assume, for the sake of contradiction, that there exists an probabilistic polynomial-time (PPT) adversary $\mathsf{Adv}$ which is able to break the target security property of $A$. Then, the proof is done if one can show an efficient way (i.e. the ``reduction'') to make use of $\mathsf{Adv}$ to break the security of $B$.  </p>
+
+<p>Everything is good if the security of $B$ holds against the class of adversaries for which we try to prove the security of $A$. For example, assume that $B$ is secure against all polynomial-time adversaries. Then the security of $A$ against all polynomial-time adversaries will be established once we can reduce it to the security of $B$ in polynomial-time. Similar result holds for, say, the class of sub-exponential adversaries, with the reduction being sub-exponential time.</p>
+
+<p>But things become a little bit tricky if we want to prove the security of $A$ against a class of adversaries that is stronger than the ones that are ruled out by the security of $B$. At the first glance, this should be out of reasonable concerns if the power of the two classes of adversaries differ too much. Indeed, no one will hope to construct sub-exponentially hiding commitments from one-way permutations that are only polynomial-time secure. However, this difference on power could sometime be so small that we have to pay attention.  </p>
+
+<p>One of such settings involves zero-knowledge (ZK) protocols. Due to technical reasons, it is usually hard to make the simulator run in strictly polynomial time (see e.g. [<a href="https://eprint.iacr.org/2002/043" target="_blank">BarLin02</a>] for more discussions). Instead, in the widely-accepted definition of ZK, people allow the simulator to run in expected polynomial time. But this immediately raises the following question: 
+<ul> 	
+<li> How could we reduce the ZK property to a polynomial hardness assumption? </li>
+</ul>
+</p>
+
+<p>For example, we all know that ZK can be constructed from one-way functions (OWFs). But how do we actually reduce ZK property that involves expected poly-time simulator to the poly-time security of OWFs?</p>
+
+<p>The famous work of Goldreich and Kahan [<a href="http://www.wisdom.weizmann.ac.il/~oded/PSX/zkAK.pdf" target="_blank">GolKah96</a>] contains the answer. I view it as an interesting application of averaging argument (and Markov's inequality). Though their original paper was already very well-written with enough details, there are still some steps that may not be straightforward to a beginner. Thus, I decided to take a note here (Section <a href="#section_solution">2</a>) on the thorough derivation. </p>
+
+<p>I want to remark that their solution is general enough such that it can be used in any context as long as the problem, in its essential form, is about constructing a poly-time reduction w.r.t. expected poly-time parties. This also allows me to present their technique in Section <a href="#section_solution">2</a> without mentioning anything that is specific to ZK. So feel free to read it if you are not familiar with ZK.</p>
+
+<p>
+<h2 id="section_solution">2&nbsp;&nbsp;&nbsp;The Solution from Goldreich-Kahan</h2>
+  To illustrate the core of the Goldreich-Kahan argument and to hide irrelevant details, I choose to recast their technique to the following lemma w.r.t. OWFs. I believe that one can extend this technique to proper context as he/she needs.  </p>
+
+<p><blockquote id="lemma_the-only-lemma"><b>Lemma 1&nbsp;&nbsp;&nbsp;</b> Assume $f$ is an OWF against PPT adversaries. Then it is also an OWF against expected PPT adversaries. </blockquote></p>
+
+<p>The proof is presented in next section. I will gloss over the details that can be inferred from the context easily, such as the length of the pre-images/images of $f$. 
+<h3 id="section_idea-for-proof">3.1&nbsp;&nbsp;&nbsp;The Idea Behind the Proof</h3>
+  Assume, for the sake of contradiction, that there is an expected PPT machine $\mathsf{Adv}$ that breaks the one-wayness of $f$. We will build a machine $\mathsf{Adv}'$ that runs in strictly polynomial time and (still) breaks the one-wayness of $f$.</p>
+
+<p>Let $\lambda$ denote the security parameter. W.l.o.g., assume that the expected running time of $\mathsf{Adv}$ is the polynomial $T(\lambda)$. It breaks the one-wayness of $f$, which means that there exist a polynomial $P(\lambda)$ such that for infinitely many $\lambda \in \mathbb{N}$, $\mathsf{Adv}$ inverts $f$ with probability at least $\frac{1}{P(\lambda)}$.  In the remaining part of this section, I will drop $\lambda$ from $T(\lambda)$ and $P(\lambda)$ to make the presentation succinct.</p>
+
+<p>The machine $\mathsf{Adv}'$ is constructed by ``truncating'' the executions of $\mathsf{Adv}$ that go beyond $2TP)$ steps. In the following, we argue that $\mathsf{Adv}$ also breaks the one-wayness of $f$.</p>
+
+<p>First, it follows from Markov's inequality that the truncated executions account for only a small portion. More formally, let random variable $X$ denote the running time of $\mathsf{Adv}$. According Markov's inequality, we have: $$\Pr[X \ge 2TP] \le \frac{1}{2P}.$$ </p>
+
+<p>Then, by an averaging argument, one can show that in the ``un-truncated'' executions, $\mathsf{Adv}'$ can still invert $f$ with probability at least $\frac{1}{2P}$. Formally, let the $\mathsf{Win}(\lambda)$ denote the even that $\mathsf{Adv}$ wins in the security game for the one-wayness of $f$, with security parameter set to $\lambda$. We then have: \begin{equation*}   \Pr[\mathsf{Win}]  =  \Pr\big[\mathsf{Win} | X < 2TP\big] \Pr\big[X < 2TP \big]+ \Pr\big[\mathsf{Win} | X \ge 2TP \big] \Pr\big[X \ge 2TP\big]  \end{equation*}</p>
+
+<p>We now prove that the above equation implies that  \begin{equation}\label{eq:Adv-win} \Pr\big[\mathsf{Win} | X < 2TP\big] \ge \frac{1}{2P}. \end{equation}</p>
+
+<p>Assume for contradiction that $\Pr\big[\mathsf{Win} | X < 2TP\big] < \frac{1}{2P}$. Continuing the above equation with this assumption, we have: \begin{align*}   \frac{1}{P} & = \Pr[\mathsf{Win}]  <  \frac{1}{2P} \Pr\big[X < 2TP \big]+ \Pr\big[\mathsf{Win} | X \ge 2TP \big] \frac{1}{2P} \\    & \le  \frac{1}{2P} \cdot 1 + 1 \cdot \frac{1}{2P} \\   & =  \frac{1}{P}, \end{align*} which implies a contradiction as it says $\frac{1}{P} < \frac{1}{P}$. Thus, Inequality (\ref{eq:Adv-win}) holds. This finishes our proof as $\Pr\big[\mathsf{Win} | X < 2TP\big]$ is exactly the probability that $\mathsf{Adv}'$ wins in the security game. </p>
+
+<p>
+<h3>3.2&nbsp;&nbsp;&nbsp;A Question Regarding Their Original Proof</h3>
+ In the original paper [<a href="http://www.wisdom.weizmann.ac.il/~oded/PSX/zkAK.pdf" target="_blank">GolKah96</a>], there are two places where the authors conducted the above type of argument --- Claim 3 and 4. Claim 3 is about reducing the consistency of the malicious verifier $V^*$'s behavior to the computationally-binding property of the commitments (made by $V^*$). The argument Section <a href="#section_idea-for-proof">3.1</a> reflects the exact idea used in their original proof. However, things are different for Claim 4, where the authors reduced the computational indistinguishability between the real view of $V^*$ and the simulated one.</p>
+
+<p>To provide more context, in their proof for ZK property, the authors first constructed a (potentially) super-polynomial simulator $M^*$. They then modify $M^*$ to a expected PPT machine $M^{**}$, which is their actual simulator. They showed that the outputs of $M^*$ and $M^{**}$ are statistically close. Thus, to establish ZK property, the authors chose to prove that the output of $M^*$ is computationally indistinguishable from the view of $V^*$ resulted from the real execution. Note that since $M^*$ is not guaranteed to be (even) expected polynomial time, the authors needed a more complicated proof (compared to that of Claim 3) to deal with it.</p>
+
+<p>However, it seems the following simpler way would also work: proving the indistinguishability between the output of $M^{**}$ and view of $V^*$ from the real execution. This approach is simpler as $M^{**}$ runs in expected polynomial time. Therefore, to finish the proof, we can use the same reduction as in the original proof of Claim 4, but with the ``truncation'' technique to handle the expected polynomial running time of $M^{**}$.</p>
+
+<p>Is there any thing wrong with this approach? Or is it simply because the authors missed this simpler argument (which is highly impossible)? I will appreciate it a lot if someone could leave a comment to tell me the answer (or any useful clues). </p>
+
+<p>
+<h2>3&nbsp;&nbsp;&nbsp;Some Afterthoughts</h2>
+ The above argument gives us some confidence about the thought that ``expected polynomial time'' is indeed a reasonable relaxation. </p>
+
+<p>However, the following another-side view may ruin your happy mood. The above argument seems to say that allowing the adversary to run in expected polynomial time does not make much difference. For example, Lemma <a href="#lemma_the-only-lemma">1</a> essentially means that requiring one-wayness to hold against all expected PPT adversaries would eventually result in the same definition of OWFs as the standard one. If so, then is it really necessary for cryptographers to try so hard to distinguish between the strict polynomial time and the expected one? </p>
+
+<p>The short answer is --- expected polynomial-time simulation/extraction is not closed under composition. Elaborating on this point could require another long article. For those who are interested, see the introduction section of the insightful work of Barack and Lindell [<a href="https://eprint.iacr.org/2002/043" target="_blank">BarLin02</a>] and the references there.</p>
