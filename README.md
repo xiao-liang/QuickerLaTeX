@@ -6,7 +6,7 @@ This is a command-line tool in [Golang](https://golang.org/) that converts LaTeX
 As a quick demo, see <a href="https://xiao-liang.com/blog/?p=130" target="_blank">this article</a>. It is a blog whose source code contains the following latex commands: `lemma`, `section`, `subsection`, `itemize`, `equation`, `align` and citations by hyper reference. Some of them have labels and cross-references.
 
 I provide the input source LaTeX file in 
- * `QuickerLaTeX/Demo/poly_expected_poly.tex`
+ * `QuickerLaTeX/Demo/poly_expected_poly.tex`.
 
 The output of our tool is the file 
 * `QuickerLaTeX/Demo/poly_expected_poly.txt`.
