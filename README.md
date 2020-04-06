@@ -39,10 +39,10 @@ For these features, our **QuickerLaTeX** tool does nothing but simply keeps the 
 
 ## Usage
 1. Install and active  [QuickLaTeX](http://www.holoborodko.com/pavel/quicklatex/). (You may want to see instructions for installing and usage by clicking the link.)
-2. Write your latex code in your favorite editor. There are certain rules on syntax that should be followed. See [The Rules](#rules) below. Assume the source latex file is `example.tex`
-3. Install [Golang](https://golang.org/) on your machine and make sure that it works (e.g., GOPATH and GOROOT are configured properly). There are thousands of tutorials on-line on this topic for all kinds of operating systems. Thus, I assume that Golang is already installed on you machine properly.
+2. Write your latex code in your favorite editor. There are certain rules on syntax that should be followed. See [The Rules](#rules) below. Assume that the source latex file is `example.tex`
+3. Install [Golang](https://golang.org/) on your machine and make sure that it works (e.g., GOPATH and GOROOT are configured properly). There are thousands of online tutorials on this topic for all kinds of operating systems. Thus, I assume that Golang is already installed on you machine properly.
 4. Copy the `main.go` file in `QuickerLaTeX\src\` folder to the same directory of the `example.tex` file
-5. Open your terminal and `cd` into the the same directory of the `example.tex` file. (Note that and the `main.go` is also in this folder by now.)
+5. Open your terminal and `cd` into the same directory of the `example.tex` file. Note that the `main.go` is also in this folder by now.
 6. Execute `go run main.go example.tex`. Then, a file called `example.txt` will be generated.
 7. Copy the content of `example.txt` to the Wordpress post editor in "**code view**" mode. Namely, you need to past the content there as plain html code, instead of using the **visual editor**. 
 
