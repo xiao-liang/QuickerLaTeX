@@ -1,4 +1,5 @@
 *.vscode/
 *.txt
+*.tex
 Resource/
 .DS_Store

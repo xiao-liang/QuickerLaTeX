@@ -11,7 +11,13 @@ import (
 
 
 func main() {
-	content := readLatexFile("../Resource/test.tex")
+	inputPath := os.Args[1]
+	outputPath := strings.TrimSuffix(inputPath, ".tex") + ".txt"
+
+	fmt.Println(outputPath)
+
+
+	content := readLatexFile(inputPath)
 	content = processMacros(content)	
 	body := getBody(content) 
 	body = processSections(body)
@@ -28,7 +34,7 @@ func main() {
 	body = regexp.MustCompile(`</ul>`).ReplaceAllString(body, "\n</ul>\n")
 	body = regexp.MustCompile(`<li>`).ReplaceAllString(body, "\n<li>")
 
-    writeToFile("[latexpage]\n" + body, "test.txt")
+    writeToFile("[latexpage]\n" + body, outputPath)
 }
 
 
